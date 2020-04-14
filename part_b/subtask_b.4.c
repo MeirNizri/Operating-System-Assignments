@@ -17,61 +17,45 @@ void print(const char * proccess)
     }
 }
 
-// void new_process(const char * file_name)
-// {
-//     __pid_t pid = fork();
-//     printf("new child process pid: %d\n", pid);
-//     if(pid == 0)
-//     {
-//         char * args[2] = {file_name ,NULL};
-//         execvp(args[0],args);
-//     }
-
-// }
-
-
 int main()
 {
-    // char * files = {"./subtask_b.1", "./subtask_b.2", "./subtask_b.3"};
-
-    // int i;
-    // for ( i = 0 ; i < 3 ; i++)
-    // {
-    //     new_process(files[i]);
-    // }
-
-    // creating new proccess - forking from parent and lounching subtask_b.1
+    // creating new proccess - forking from parent and launching subtask_b.1
     __pid_t pid = fork();
-    printf("new child process pid: %d\n", pid);
     if(pid == 0)
     {
         char * args[2] = {"./subtask_b.1",NULL};
         execvp(args[0],args);
     }
 
-    // creating new proccess - forking from parent and lounching subtask_b.2
-
-    pid = fork();
-    printf("new child process pid: %d\n", pid);
-    if(pid == 0)
-    {
-        char * args[2] = {"./subtask_b.2",NULL};
-        execvp(args[0],args);
-    }
-
-    // creating new proccess - forking from parent and lounching subtask_b.3
-
-    pid = fork();
-    printf("new child process pid: %d\n", pid);
-    if(pid == 0)
-    {
-        char * args[2] = {"./subtask_b.3",NULL};
-        execvp(args[0],args);
-    }
-
     else
-    {
-        print("hello from first process");
+        {
+        // creating new proccess - forking from parent and launching subtask_b.2
+
+        pid = fork();
+        if(pid == 0)
+        {
+            char * args[2] = {"./subtask_b.2",NULL};
+            execvp(args[0],args);
+        }
+        else
+        {
+            // creating new proccess - forking from parent and launching subtask_b.3
+
+            pid = fork();
+            if(pid == 0)
+            {
+                char * args[2] = {"./subtask_b.3",NULL};
+                execvp(args[0],args);
+            }
+            else
+            {
+                {
+                    print("hello from first process");
+                }
+            }
+            
+        }
+    
     }
     
 
