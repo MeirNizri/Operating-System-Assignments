@@ -1,3 +1,11 @@
+/* Create Livelock - To create a livelock, we defined that each philosopher first takes 
+    the fork to the right and then tries to take the fork to the left. 
+    If after 5 seconds of trying to take the fork he fails, he will put down
+    the right fork and wait for 5 seconds. This loop will be repeated 
+    until the philosopher has both forks and can eat. When the five philosophers
+    raise the right fork at the same time, a livelock will be created, 
+    as they will constantly raise all the forks at the same time. */
+
 #include <pthread.h> 
 #include <semaphore.h> 
 #include <stdio.h> 
@@ -42,14 +50,7 @@ void take_fork(int phnum)
 { 
 	
 	
-    /* To create a livelock, we defined that each philosopher first takes 
-    the fork to the right and then tries to take the fork to the left. 
-    If after 5 seconds of trying to take the fork he fails, he will put down
-    the right fork and wait for 5 seconds. This loop will be repeated 
-    until the philosopher has both forks and can eat. When the five philosophers
-    raise the right fork at the same time, a livelock will be created, 
-    as they will constantly raise all the forks at the same time. */
-    
+    // first takes the fork to the right and then tries to take the fork to the left.
 	sem_wait(&forks[phnum]); 
 	sleep(1); 
 	printf("Philosopher %d takes fork %d\n", phnum + 1, phnum + 1);
@@ -59,6 +60,8 @@ void take_fork(int phnum)
 		if(val == 0) {
 			sleep(1); 
 			counter++;
+			// If after 5 seconds of trying to take the fork he fails, 
+			// he will put down the right fork and wait for 5 seconds before trying again.
 			if(counter == 5) {
 				sem_post(&forks[phnum]); 
 				// put down the right fork

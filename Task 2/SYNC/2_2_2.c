@@ -1,6 +1,9 @@
-/* create Starvation - By deleting the two lines waking up the nearby philosophers, 
-    the first philosopher never wakes up the other philosophers. And so he ran alone 
-    while they starving. */
+/* Solve Starvation - We have defined that any philosopher can take both forks only if all other 
+    philosophers have laid down their forks. The result is that all philosophers 
+    eat one after the other. That is why there can never be a philosopher who will not eat. 
+    While this is not an effective implementation of the problem, it is certainly 
+    not possible to cause starvation here. 
+*/
 
 #include <pthread.h> 
 #include <semaphore.h> 
@@ -8,59 +11,35 @@
 #include <unistd.h>
 
 #define N 5 
-#define THINKING 2 
-#define HUNGRY 1 
-#define EATING 0 
 #define LEFT (phnum + 4) % N 
 #define RIGHT (phnum + 1) % N 
 
-int state[N]; 
 int phil[N] = { 0, 1, 2, 3, 4 }; 
 
 sem_t mutex; 
-sem_t S[N]; 
+sem_t forks[N]; 
 
 void test(int phnum) 
 { 
-	if (state[phnum] == HUNGRY 
-		&& state[LEFT] != EATING 
-		&& state[RIGHT] != EATING) { 
-		// state that eating 
-		state[phnum] = EATING; 
-
 		sleep(2); 
-
-		printf("Philosopher %d takes fork %d and %d\n", 
-					phnum + 1, LEFT + 1, phnum + 1); 
-
 		printf("Philosopher %d is Eating\n", phnum + 1); 
-
-		// sem_post(&S[phnum]) has no effect 
-		// during takefork 
-		// used to wake up hungry philosophers 
-		// during putfork 
-		sem_post(&S[phnum]); 
-	} 
 } 
 
 // take up chopsticks 
 void take_fork(int phnum) 
 { 
-
+    // take fork only if available
 	sem_wait(&mutex); 
-
-	// state that hungry 
-	state[phnum] = HUNGRY; 
+	sem_wait(&forks[phnum]); 
+	sleep(1); 
+	sem_wait(&forks[LEFT]); 
+	printf("Philosopher %d takes fork %d and %d\n", 
+		phnum + 1, LEFT + 1, phnum + 1); 
 
 	printf("Philosopher %d is Hungry\n", phnum + 1); 
 
 	// eat if neighbours are not eating 
 	test(phnum); 
-
-	sem_post(&mutex); 
-
-	// if unable to eat wait to be signalled 
-	sem_wait(&S[phnum]); 
 
 	sleep(1); 
 } 
@@ -68,22 +47,14 @@ void take_fork(int phnum)
 // put down chopsticks 
 void put_fork(int phnum) 
 { 
-
-	sem_wait(&mutex); 
-
-	// state that thinking 
-	state[phnum] = THINKING; 
-
 	printf("Philosopher %d putting fork %d and %d down\n", 
 		phnum + 1, LEFT + 1, phnum + 1); 
 	printf("Philosopher %d is thinking\n", phnum + 1); 
 
-	/* By deleting these two lines, the first philosopher never wakes 
-	up the other philosophers. And so he ran alone while they starving	*/
-	//test(LEFT); 
-	//test(RIGHT); 
-
-	sem_post(&mutex); 
+    // Release forks
+	sem_post(&forks[phnum]); 
+	sem_post(&forks[LEFT]); 
+	sem_post(&mutex);
 } 
 
 void* philospher(void* num) 
@@ -111,10 +82,10 @@ int main()
 
 	// initialize the mutexes 
 	sem_init(&mutex, 0, 1); 
-
+	
 	for (i = 0; i < N; i++) 
 
-		sem_init(&S[i], 0, 0); 
+		sem_init(&forks[i], 0, 1); 
 
 	for (i = 0; i < N; i++) { 
 

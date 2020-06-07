@@ -1,11 +1,12 @@
-/* Solve Deadlock - forks will be numbered 1 to 5 and each philosopher will 
+/* Solve Livelock - same implementation as 2_1_2. forks will be numbered 1 to 5 and each philosopher will 
    always pick up the lower-numbered fork first, and then the higher-numbered fork. 
-   In this case, if four of the five philosophers simultaneously pick up their lower-numbered fork, 
-   only the highest-numbered fork will remain on the table, so the fifth philosopher will not 
-   be able to pick up any fork. Moreover, only one philosopher will have access to that highest-numbered fork, 
-   so they will be able to eat using two forks. This method can cause starvation but it will never create deadlock.
+   In this case philosophers can never get stuck. if four of the five philosophers simultaneously 
+   pick up their lower-numbered fork, only the highest-numbered fork will remain on the table, 
+   so the fifth philosopher will not be able to pick up any fork. Moreover, only one philosopher 
+   will have access to that highest-numbered fork, so he will be able to eat using two forks. 
+   Therefore, there will always be one philosopher who can progress and prevent a situation that the 
+   system is not progressing. This method can cause starvation but it will never create Livelock.
  */
-
 
 #include <pthread.h> 
 #include <semaphore.h> 
@@ -59,7 +60,7 @@ void take_fork(int phnum)
 // put down chopsticks 
 void put_fork(int phnum) 
 { 
-	// find lower and higher numbered forks
+     // find lower and higher numbered forks
 	int lowerFork, higherFork;
     if(phnum != 0) {
     	lowerFork = LEFT;
