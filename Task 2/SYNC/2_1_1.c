@@ -1,3 +1,8 @@
+/* Create Deadlock - Instead of using mutex semaphore, every philosopher should 
+   lock both forks when he takes them. This will significantly increase 
+   the chance of Deadlock, since everyone may take the right fork and wait 
+   for the left fork. */
+
 #include <pthread.h> 
 #include <semaphore.h> 
 #include <stdio.h> 
@@ -40,12 +45,7 @@ void test(int phnum)
 // take up chopsticks 
 void take_fork(int phnum) 
 { 
-    /* Instead of using mutex semaphore, every philosopher should 
-    lock both forks when he takes them. This will significantly increase 
-    the chance of Deadlock, since everyone may take the right fork and wait 
-    for the left fork */
-    
-	//sem_wait(&mutex); 
+    //take right fork and than left fork 
 	sem_wait(&forks[phnum]); 
 	printf("Philosopher %d takes fork %d\n", phnum + 1, phnum + 1); 
 	sleep(1); 
@@ -60,7 +60,7 @@ void take_fork(int phnum)
 	// eat if neighbours are not eating 
 	test(phnum); 
 
-	//sem_post(&mutex);
+	// put down right fork than left fork
 	sem_post(&forks[phnum]); 
 	sem_post(&forks[LEFT]); 
 
@@ -74,7 +74,7 @@ void take_fork(int phnum)
 void put_fork(int phnum) 
 { 
 
-	//sem_wait(&mutex); 
+	//take right fork and than left fork 
 	sem_wait(&forks[phnum]); 
 	sleep(1); 
 	sem_wait(&forks[LEFT]); 
@@ -89,7 +89,7 @@ void put_fork(int phnum)
 	test(LEFT); 
 	test(RIGHT); 
 
-	//sem_post(&mutex);
+	// put down right fork than left fork
 	sem_post(&forks[phnum]); 
 	sem_post(&forks[LEFT]); 
 } 
