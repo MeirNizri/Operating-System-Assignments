@@ -23,7 +23,6 @@ void parentSignalHandler(int sig)
         //signaling child
         kill(cpid, SIGUSR1);
     }
-    //return;
 }
 
 void childSignalHandler(int sig)
@@ -32,7 +31,7 @@ void childSignalHandler(int sig)
     printf("child got %d from pipe.\n", (childValue = getValue()));
     if(childValue < 5)
     {
-        //increamenting and sending to pipe
+        //incrementing and sending to pipe
         childValue++;
         printf("child sent %d to pipe.\n", sendValue(childValue));
         //signaling parent
@@ -44,7 +43,6 @@ void childSignalHandler(int sig)
         //all open file descriptors are being closed, child terminates and SIGCHLD signal is sent to his parent
         exit(0);
         }
-    //return;
 }
 
 void parentSIGCHLDHandler(int sig)
@@ -99,6 +97,7 @@ int main()
         printf("child pid: %d\n", cpid);
         //set up SIGUSR signal handler
         signal(SIGUSR1, parentSignalHandler);
+		//set up SIGCHLD signal handler to handle child process death
         signal(SIGCHLD, parentSIGCHLDHandler);
 
         while(1)
@@ -110,7 +109,7 @@ int main()
         //set up SIGUSR signal handler
         signal(SIGUSR1, childSignalHandler);
         
-        //sending first value and kickstarting pinpong session between the processes
+        //sending first value and kick starting ping pong session between the processes
         printf("child sent %d to pipe.\n", sendValue(childValue));    
         kill(ppid, SIGUSR1);
         
