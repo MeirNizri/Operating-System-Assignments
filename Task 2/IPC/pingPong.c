@@ -14,7 +14,6 @@ void parentSignalHandler(int sig)
 {
     //reading from pipe
     printf("parent got %d from pipe.\n", (parentValue = getValue()));
-    //
     if(parentValue < 5)
     {
         //increamenting and sending to pipe
@@ -54,7 +53,7 @@ void parentSIGCHLDHandler(int sig)
 }
 
 int getValue()
-{       
+{
     int val = 0;
     int success = read(pipefd[0], &val, sizeof(val));
     if(success != -1)
@@ -76,7 +75,7 @@ int sendValue(int val)
         printf("sendValue::writing to pipe failed\n");
         return -1;
     }
-    
+
 }
 
 
@@ -88,9 +87,9 @@ int main()
     parentValue = 0;
     ppid = getpid();
     printf("parent pid: %d\n", ppid);
-    
+
     cpid = fork(); 
-    
+
     //parent
     if(cpid > 0)
     {
@@ -108,15 +107,15 @@ int main()
     {
         //set up SIGUSR signal handler
         signal(SIGUSR1, childSignalHandler);
-        
+
         //sending first value and kick starting ping pong session between the processes
-        printf("child sent %d to pipe.\n", sendValue(childValue));    
+        printf("child sent %d to pipe.\n", sendValue(childValue));
         kill(ppid, SIGUSR1);
-        
+
         while(1)
             sleep(2);
     }
     else
         printf("forking went bad\n");
-    return;
+    return 0;
 }
